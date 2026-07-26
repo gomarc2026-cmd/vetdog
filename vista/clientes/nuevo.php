@@ -324,12 +324,7 @@ require_once '../../assets/db/config.php';
                         </a>
                         <ul class="ml-menu">
                             <li class="active"><a href="../clientes/nuevo.php">Registrar</a></li>
-                           
-
-                            <!-- POR ESTO: -->
-<li><a href="../clientes/mostrar.php">Listar / Modificar</a></li>
-
-
+                            <li><a href="../../folder/clientes/index.php">Listar / Modificar</a></li>
                         </ul>
                     </li>
 
