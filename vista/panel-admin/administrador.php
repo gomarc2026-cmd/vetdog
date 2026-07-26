@@ -1,33 +1,24 @@
 ﻿<?php
-     session_start();
-    
-    if(!isset($_SESSION['cargo']) == 1){
-    header('location: ../pages-login');
-  }
-?>
+session_start();
 
-<?php
+if (!isset($_SESSION['cargo'])) {
+    header('location: ../pages-login.php');
+    exit();
+}
 
- // Incluimos tu config.php que ya tiene Aiven
 require_once '../../assets/db/config.php';
-  /* Getting demo_viewer table data */
 
-  $sql = "SELECT SUM(total) as count FROM venta 
+/* Getting demo_viewer table data */
+$sql = "SELECT SUM(total) as count FROM venta GROUP BY YEAR(fecha) ORDER BY YEAR(fecha)";
+$viewer = mysqli_query($mysqli, $sql);
+$viewer = mysqli_fetch_all($viewer, MYSQLI_ASSOC);
+$viewer = json_encode(array_column($viewer, 'count'), JSON_NUMERIC_CHECK);
 
-      GROUP BY YEAR(id_venta) ORDER BY id_venta";
-
-  $viewer = mysqli_query($mysqli,$sql);
-  $viewer = mysqli_fetch_all($viewer,MYSQLI_ASSOC);
-  $viewer = json_encode(array_column($viewer, 'count'),JSON_NUMERIC_CHECK);
-
-
-  /* Getting demo_click table data */
-
-  $sql = "SELECT SUM(total) as count FROM compra 
-      GROUP BY YEAR(id_compra) ORDER BY id_compra";
-  $click = mysqli_query($mysqli,$sql);
-  $click = mysqli_fetch_all($click,MYSQLI_ASSOC);
-  $click = json_encode(array_column($click, 'count'),JSON_NUMERIC_CHECK);
+/* Getting demo_click table data */
+$sql = "SELECT SUM(total) as count FROM compra GROUP BY YEAR(fecha) ORDER BY YEAR(fecha)";
+$click = mysqli_query($mysqli, $sql);
+$click = mysqli_fetch_all($click, MYSQLI_ASSOC);
+$click = json_encode(array_column($click, 'count'), JSON_NUMERIC_CHECK);
 ?>
 <!DOCTYPE html>
 <html>
