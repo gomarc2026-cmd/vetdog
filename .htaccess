@@ -1,0 +1,14 @@
+
+Options -Indexes
+
+
+<IfModule mod_rewrite.c>
+# Activar RewriteEngine
+RewriteEngine on
+RewriteBase /vetdog/
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+ 
+RewriteRule ^(.*)$ $1.php
+
+</IfModule>
