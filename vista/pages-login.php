@@ -6,7 +6,6 @@
 
     // Get data from FORM
     $usuario = $_POST['usuario'];
-    
     $contra = MD5($_POST['contra']);
 
     if($usuario == '')
@@ -16,14 +15,11 @@
 
     if($errMsg == '') {
       try {
-$stmt = $connect->prepare('SELECT id, nombre, usuario, correo,contra, cargo FROM usuarios WHERE usuario = :usuario');
-
+        $stmt = $connect->prepare('SELECT id, nombre, usuario, correo, contra, cargo FROM usuarios WHERE usuario = :usuario');
 
         $stmt->execute(array(
           ':usuario' => $usuario
-          
-          
-          ));
+        ));
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if($data == false){
@@ -39,15 +35,13 @@ $stmt = $connect->prepare('SELECT id, nombre, usuario, correo,contra, cargo FROM
             $_SESSION['contra'] = $data['contra'];
             $_SESSION['cargo'] = $data['cargo'];
             
-            
-    if($_SESSION['cargo'] == 1){
-          header('Location: panel-admin/administrador');
-        
-        }
+            // Redirección corregida con ruta absoluta y extensión .php
+            header('Location: /vista/panel-admin/administrador.php');
             exit;
           }
-          else
+          else {
             $errMsg = 'Contraseña incorrecta.';
+          }
         }
       }
       catch(PDOException $e) {
@@ -97,15 +91,15 @@ $stmt = $connect->prepare('SELECT id, nombre, usuario, correo,contra, cargo FROM
           </div>
           <div class="flex items-center justify-center p-6 sm:p-12 md:w-1/2">
             <div class="w-full">
-              <form class="container" autocomplete="off" method="POST"  role="form">
+              <form class="container" autocomplete="off" method="POST" role="form">
               <h1 class="mb-4 text-xl font-semibold text-gray-700 dark:text-gray-200">
                 Iniciar Sesion
               </h1>
               <?php
-    if(isset($errMsg)){
-    echo '<div style="color:#FF0000;text-align:center;font-size:20px;">'.$errMsg.'</div>';  
-         }
-?>
+                if(isset($errMsg)){
+                  echo '<div style="color:#FF0000;text-align:center;font-size:20px;">'.$errMsg.'</div>';  
+                }
+              ?>
               <label class="block text-sm">
                 <span class="text-gray-700 dark:text-gray-400">Usuario</span>
                 <input
@@ -118,13 +112,12 @@ $stmt = $connect->prepare('SELECT id, nombre, usuario, correo,contra, cargo FROM
                 <input
                   class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                   placeholder="***************"
-                  type="password" required="true" name="contra" value="<?php if(isset($_POST['contra'])) echo MD5($_POST['contra']) ?>"
+                  type="password" required="true" name="contra" autocomplete="off"
                 />
               </label>
 
-
               <hr class="my-8" />
-              <button class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium leading-5 text-white text-gray-700 transition-colors duration-150 border border-gray-300 rounded-lg dark:text-gray-400 active:bg-transparent hover:border-gray-500 focus:border-gray-500 active:text-gray-500 focus:outline-none focus:shadow-outline-gray"  name='login' type="submit">Acceder</button>
+              <button class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium leading-5 text-white text-gray-700 transition-colors duration-150 border border-gray-300 rounded-lg dark:text-gray-400 active:bg-transparent hover:border-gray-500 focus:border-gray-500 active:text-gray-500 focus:outline-none focus:shadow-outline-gray" name='login' type="submit">Acceder</button>
                </form>
                <div id="msg_error" class="alert alert-danger" role="alert" style="display: none"></div>
             </div>
