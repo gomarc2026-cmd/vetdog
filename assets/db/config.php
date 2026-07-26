@@ -1,6 +1,4 @@
 <?php
-session_start();
-
 // Define database
 define('dbhost', 'mysql-2f8d2d20-gomarc-7580.b.aivencloud.com');
 define('dbport', '16189');
@@ -20,5 +18,4 @@ try {
 } catch(PDOException $e) {
     echo $e->getMessage();
 }
-
 ?>
