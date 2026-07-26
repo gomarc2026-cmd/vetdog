@@ -1,45 +1,69 @@
 ﻿<?php
-  require_once '../../assets/db/config.php';
+session_start();
+require_once '../../assets/db/config.php';
 
-  if(!isset($_SESSION['cargo']) || $_SESSION['cargo'] != 1){
-      header('Location: /vista/pages-login.php');
-      exit;
-  }
+// Validar permisos de administrador
+if (!isset($_SESSION['cargo']) || $_SESSION['cargo'] != 1) {
+    header('Location: /vista/pages-login.php');
+    exit;
+}
 
-  // Usar la conexión PDO global de config.php
-  $mysqli = new mysqli(dbhost, dbuser, dbpass, dbname, dbport);
-  if ($mysqli->connect_error) {
-      die("Error de conexión: " . $mysqli->connect_error);
-  }
+/* --- OBTENCIÓN DE DATOS PARA HIGHCHARTS USANDO PDO --- */
+try {
+    // 1. Obtener Ventas agrupadas por año
+    $sqlVentas = "SELECT YEAR(fec_registro) as anio, SUM(total) as count FROM venta GROUP BY YEAR(fec_registro) ORDER BY anio ASC";
+    $stmtVentas = $connect->query($sqlVentas);
+    $ventasData = $stmtVentas->fetchAll(PDO::FETCH_ASSOC);
 
-  /* Getting demo_viewer table data */
-  $sql = "SELECT SUM(total) as count FROM venta GROUP BY YEAR(id_venta) ORDER BY id_venta";
-  $viewer = mysqli_query($mysqli,$sql);
-  $viewer = $viewer ? mysqli_fetch_all($viewer,MYSQLI_ASSOC) : [];
-  $viewer = json_encode(array_column($viewer, 'count'),JSON_NUMERIC_CHECK);
+    // 2. Obtener Compras agrupadas por año
+    $sqlCompras = "SELECT YEAR(fec_registro) as anio, SUM(total) as count FROM compra GROUP BY YEAR(fec_registro) ORDER BY anio ASC";
+    $stmtCompras = $connect->query($sqlCompras);
+    $comprasData = $stmtCompras->fetchAll(PDO::FETCH_ASSOC);
 
-  /* Getting demo_click table data */
-  $sql = "SELECT SUM(total) as count FROM compra GROUP BY YEAR(id_compra) ORDER BY id_compra";
-  $click = mysqli_query($mysqli,$sql);
-  $click = $click ? mysqli_fetch_all($click,MYSQLI_ASSOC) : [];
-  $click = json_encode(array_column($click, 'count'),JSON_NUMERIC_CHECK);
+    // Generar categorías únicas (años)
+    $anios = array_unique(array_merge(
+        array_column($ventasData, 'anio'),
+        array_column($comprasData, 'anio')
+    ));
+    sort($anios);
+
+    // Mapear totales a cada año para mantener consistencia en los ejes
+    $click = [];  // Compras
+    $viewer = []; // Ventas
+
+    foreach ($anios as $anio) {
+        $c = array_filter($comprasData, fn($item) => $item['anio'] == $anio);
+        $v = array_filter($ventasData, fn($item) => $item['anio'] == $anio);
+
+        $click[] = !empty($c) ? floatval(reset($c)['count']) : 0;
+        $viewer[] = !empty($v) ? floatval(reset($v)['count']) : 0;
+    }
+
+    $jsonAnios = json_encode(array_values($anios));
+    $jsonClick = json_encode($click, JSON_NUMERIC_CHECK);
+    $jsonViewer = json_encode($viewer, JSON_NUMERIC_CHECK);
+
+} catch (Exception $e) {
+    $jsonAnios = json_encode([]);
+    $jsonClick = json_encode([]);
+    $jsonViewer = json_encode([]);
+}
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <title>Vetdog V.1 | Vetdog - Vetdog Admin Template</title>
-    <!-- Google Font - Iconos -->
+    <title>Vetdog V.1 | Vetdog - Admin Template</title>
+    
+    <!-- Google Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
-    <!-- Bootstrap Core Css -->
+    
+    <!-- CSS Plugins -->
     <link href="../../assets/plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
-
-    <!-- Waves Effect Css -->
     <link href="../../assets/plugins/node-waves/waves.css" rel="stylesheet" />
-    <!-- Animation Css -->
     <link href="../../assets/plugins/animate-css/animate.css" rel="stylesheet" />
     <link href="../../css/style.css" rel="stylesheet">
     <link href="../../assets/css/themes/all-themes.css" rel="stylesheet" />
@@ -52,34 +76,23 @@
         <div class="loader">
             <div class="preloader">
                 <div class="spinner-layer pl-red">
-                    <div class="circle-clipper left">
-                        <div class="circle"></div>
-                    </div>
-                    <div class="circle-clipper right">
-                        <div class="circle"></div>
-                    </div>
+                    <div class="circle-clipper left"><div class="circle"></div></div>
+                    <div class="circle-clipper right"><div class="circle"></div></div>
                 </div>
             </div>
             <p>Cargando...</p>
         </div>
     </div>
-    <!-- #END# Page Loader -->
 
     <!-- Overlay For Sidebars -->
     <div class="overlay"></div>
-    <!-- #END# Overlay For Sidebars -->
 
-    <!-- LUPA -->
+    <!-- Buscador Lupa -->
     <div class="search-bar">
-        <div class="search-icon">
-            <i class="material-icons"></i>
-        </div>
+        <div class="search-icon"><i class="material-icons">search</i></div>
         <input type="text" placeholder="Buscar...">
-        <div class="close-search">
-            <i class="material-icons">X</i>
-        </div>
+        <div class="close-search"><i class="material-icons">close</i></div>
     </div>
-    <!-- //LUPA -->
 
     <!-- Top Bar -->
     <nav class="navbar">
@@ -91,14 +104,11 @@
             </div>
             <div class="collapse navbar-collapse" id="navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <!-- Call Search -->
                     <li><a href="javascript:void(0);" class="js-search" data-close="true"><i class="material-icons">search</i></a></li>
-                    <!-- #END# Call Search -->
                 </ul>
             </div>
         </div>
     </nav>
-    <!-- #Top Bar -->
 
     <section>
         <!-- Left Sidebar -->
@@ -109,8 +119,12 @@
                     <img src="../../assets/img/mujerico.png" width="48" height="48" alt="User" />
                 </div>
                 <div class="info-container">
-                    <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo isset($_SESSION['nombre']) ? ucfirst($_SESSION['nombre']) : 'Admin'; ?></div>
-                    <div class="email"><?php echo isset($_SESSION['correo']) ? ucfirst($_SESSION['correo']) : ''; ?></div>
+                    <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <?php echo isset($_SESSION['nombre']) ? ucfirst($_SESSION['nombre']) : 'Admin'; ?>
+                    </div>
+                    <div class="email">
+                        <?php echo isset($_SESSION['correo']) ? $_SESSION['correo'] : ''; ?>
+                    </div>
                     <div class="btn-group user-helper-dropdown">
                         <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">keyboard_arrow_down</i>
                         <ul class="dropdown-menu pull-right">
@@ -121,7 +135,6 @@
                     </div>
                 </div>
             </div>
-            <!-- #User Info -->
 
             <!-- Menu -->
             <div class="menu">
@@ -231,29 +244,23 @@
                 </ul>
             </div>
         </aside>
-
-        <aside id="rightsidebar" class="right-sidebar"></aside>
     </section>
 
-    <!-- CONTENIDO DE LA PÁGINA -->
+    <!-- CONTENIDO PRINCIPAL DE LA PÁGINA -->
     <section class="content">
         <div class="container-fluid">
             <div class="block-header"></div>
 
-            <!-- SubMenu1 -->
+            <!-- SubMenu 1 (Kpis) -->
             <div class="row clearfix">
                 <!-- PRODUCTOS -->
                 <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                     <div class="info-box bg-pink hover-expand-effect">
-                        <a href="../../folder/productos">
-                            <div class="icon"><i class="material-icons">inbox</i></div>
-                        </a>
+                        <a href="../../folder/productos"><div class="icon"><i class="material-icons">inbox</i></div></a>
                         <?php
-                          try {
-                              $sql = "SELECT COUNT(*) total FROM products";
-                              $result = $connect->query($sql);
-                              $total = $result->fetchColumn();
-                          } catch(Exception $e) { $total = 0; }
+                            try {
+                                $total = $connect->query("SELECT COUNT(*) FROM products")->fetchColumn();
+                            } catch(Exception $e) { $total = 0; }
                         ?>
                         <div class="content">
                             <div class="text">PRODUCTOS</div>
@@ -265,15 +272,11 @@
                 <!-- CATEGORÍAS -->
                 <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                     <div class="info-box bg-cyan hover-expand-effect">
-                        <a href="../../folder/categorias">
-                            <div class="icon"><i class="material-icons">low_priority</i></div>
-                        </a>
+                        <a href="../../folder/categorias"><div class="icon"><i class="material-icons">low_priority</i></div></a>
                         <?php
-                          try {
-                              $sql = "SELECT COUNT(*) total FROM category";
-                              $result = $connect->query($sql);
-                              $total = $result->fetchColumn();
-                          } catch(Exception $e) { $total = 0; }
+                            try {
+                                $total = $connect->query("SELECT COUNT(*) FROM category")->fetchColumn();
+                            } catch(Exception $e) { $total = 0; }
                         ?>
                         <div class="content">
                             <div class="text">CATEGORÍAS</div>
@@ -285,15 +288,11 @@
                 <!-- CLIENTES -->
                 <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                     <div class="info-box bg-light-green hover-expand-effect">
-                        <a href="../../folder/clientes">
-                            <div class="icon"><i class="material-icons">supervisor_account</i></div>
-                        </a>
+                        <a href="../../folder/clientes"><div class="icon"><i class="material-icons">supervisor_account</i></div></a>
                         <?php
-                          try {
-                              $sql = "SELECT COUNT(*) total FROM owner";
-                              $result = $connect->query($sql);
-                              $total = $result->fetchColumn();
-                          } catch(Exception $e) { $total = 0; }
+                            try {
+                                $total = $connect->query("SELECT COUNT(*) FROM owner")->fetchColumn();
+                            } catch(Exception $e) { $total = 0; }
                         ?>
                         <div class="content">
                             <div class="text">CLIENTES</div>
@@ -305,16 +304,12 @@
                 <!-- COMPRAS -->
                 <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                     <div class="info-box bg-orange hover-expand-effect">
-                        <a href="../../folder/compra">
-                            <div class="icon"><i class="material-icons">monetization_on</i></div>
-                        </a>
+                        <a href="../../folder/compra"><div class="icon"><i class="material-icons">monetization_on</i></div></a>
                         <?php
-                          try {
-                              $sql = "SELECT SUM(total) FROM compra";
-                              $result = $connect->query($sql);
-                              $total = $result->fetchColumn();
-                              $total = $total ? $total : 0;
-                          } catch(Exception $e) { $total = 0; }
+                            try {
+                                $total = $connect->query("SELECT SUM(total) FROM compra")->fetchColumn();
+                                $total = $total ? $total : 0;
+                            } catch(Exception $e) { $total = 0; }
                         ?>
                         <div class="content">
                             <div class="text">COMPRAS</div>
@@ -324,20 +319,16 @@
                 </div>
             </div>
 
-            <!-- SubMenu2 -->
+            <!-- SubMenu 2 (Kpis) -->
             <div class="row clearfix">
                 <!-- PROVEEDORES -->
                 <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                     <div class="info-box bg-pink hover-expand-effect">
-                        <a href="../../folder/proveedores">
-                            <div class="icon"><i class="material-icons">business</i></div>
-                        </a>
+                        <a href="../../folder/proveedores"><div class="icon"><i class="material-icons">business</i></div></a>
                         <?php
-                          try {
-                              $sql = "SELECT COUNT(*) total FROM supplier";
-                              $result = $connect->query($sql);
-                              $total = $result->fetchColumn();
-                          } catch(Exception $e) { $total = 0; }
+                            try {
+                                $total = $connect->query("SELECT COUNT(*) FROM supplier")->fetchColumn();
+                            } catch(Exception $e) { $total = 0; }
                         ?>
                         <div class="content">
                             <div class="text">PROVEEDORES</div>
@@ -349,15 +340,11 @@
                 <!-- VETERINARIOS -->
                 <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                     <div class="info-box bg-cyan hover-expand-effect">
-                        <a href="../../folder/veterinarios">
-                            <div class="icon"><i class="material-icons">person_pin</i></div>
-                        </a>
+                        <a href="../../folder/veterinarios"><div class="icon"><i class="material-icons">person_pin</i></div></a>
                         <?php
-                          try {
-                              $sql = "SELECT COUNT(*) total FROM veterinarian";
-                              $result = $connect->query($sql);
-                              $total = $result->fetchColumn();
-                          } catch(Exception $e) { $total = 0; }
+                            try {
+                                $total = $connect->query("SELECT COUNT(*) FROM veterinarian")->fetchColumn();
+                            } catch(Exception $e) { $total = 0; }
                         ?>
                         <div class="content">
                             <div class="text">VETERINARIOS</div>
@@ -369,16 +356,12 @@
                 <!-- VENTAS -->
                 <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                     <div class="info-box bg-light-green hover-expand-effect">
-                        <a href="../../folder/venta">
-                            <div class="icon"><i class="material-icons">trending_up</i></div>
-                        </a>
+                        <a href="../../folder/venta"><div class="icon"><i class="material-icons">trending_up</i></div></a>
                         <?php
-                          try {
-                              $sql = "SELECT SUM(total) FROM venta";
-                              $result = $connect->query($sql);
-                              $total = $result->fetchColumn();
-                              $total = $total ? $total : 0;
-                          } catch(Exception $e) { $total = 0; }
+                            try {
+                                $total = $connect->query("SELECT SUM(total) FROM venta")->fetchColumn();
+                                $total = $total ? $total : 0;
+                            } catch(Exception $e) { $total = 0; }
                         ?>
                         <div class="content">
                             <div class="text">VENTAS</div>
@@ -388,34 +371,12 @@
                 </div>
             </div>
 
-            <!-- COMPARATIVA -->
+            <!-- COMPARATIVA HIGHCHARTS -->
             <div class="row clearfix">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-body">
-                            <div id="containers"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PRODUCTOS DEL AÑO -->
-            <div class="row clearfix">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <div class="card">
-                        <div class="header">
-                            <div class="row clearfix">
-                                <div class="col-xs-12 col-sm-6">
-                                    <?php
-                                        date_default_timezone_set('America/Lima');
-                                        $year = date('Y');
-                                    ?>
-                                    <h2>PRODUCTOS DEL AÑO <?php echo $year; ?></h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="chart-container">
-                            <canvas id="mycanvas"></canvas>
+                            <div id="containers" style="width: 100%; height: 400px;"></div>
                         </div>
                     </div>
                 </div>
@@ -423,42 +384,47 @@
 
             <!-- ÚLTIMOS PRODUCTOS -->
             <div class="row clearfix">
-                <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
                     <div class="card">
                         <div class="header">
                             <div class="row clearfix">
                                 <div class="col-xs-6 col-sm-6">
                                     <h2><strong>ÚLTIMOS PRODUCTOS</strong></h2>
                                 </div>
-                                <a href="../../folder/productos" class="btn btn-sm btn-danger btn-flat pull-right">Ver todos</a>
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>CÓDIGO</th>
-                                            <th>PRODUCTO</th>
-                                            <th>STOCK</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php 
-                                            try { 
-                                                $sql = 'SELECT * FROM products ORDER BY id_prod DESC LIMIT 5';
-                                                foreach ($connect->query($sql) as $row) {
-                                                    ?>
-                                                    <tr>
-                                                        <td><label class="badge badge-primary"><?php echo $row['codigo']; ?></label></td>
-                                                        <td><?php echo $row['nompro']; ?></td>
-                                                        <td><?php echo $row['stock']; ?></td>
-                                                    </tr>
-                                                    <?php 
-                                                }
-                                            } catch(PDOException $e) {
-                                                echo "<tr><td colspan='3'>Hubo un problema: " . $e->getMessage() . "</td></tr>";
-                                            }
-                                        ?>
-                                    </tbody>
-                                </table>
+                                <div class="col-xs-6 col-sm-6 text-right">
+                                    <a href="../../folder/productos" class="btn btn-sm btn-danger btn-flat">Ver todos</a>
+                                </div>
                             </div>
+                        </div>
+                        <div class="body table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>CÓDIGO</th>
+                                        <th>PRODUCTO</th>
+                                        <th>STOCK</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php 
+                                        try { 
+                                            $sql = 'SELECT codigo, nompro, stock FROM products ORDER BY id_prod DESC LIMIT 5';
+                                            $stmt = $connect->query($sql);
+                                            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                                ?>
+                                                <tr>
+                                                    <td><label class="label label-primary"><?php echo htmlspecialchars($row['codigo']); ?></label></td>
+                                                    <td><?php echo htmlspecialchars($row['nompro']); ?></td>
+                                                    <td><?php echo htmlspecialchars($row['stock']); ?></td>
+                                                </tr>
+                                                <?php 
+                                            }
+                                        } catch(PDOException $e) {
+                                            echo "<tr><td colspan='3'>Error al obtener productos: " . $e->getMessage() . "</td></tr>";
+                                        }
+                                    ?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -466,19 +432,20 @@
         </div>
     </section>
 
-    <!-- Jquery Core Js -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.js"></script>
-    <script src="../../assets/js/Chart.min.js"></script>
+    <!-- JS Core & Plugins -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>
 
     <script type="text/javascript">
     $(function () { 
-        var data_click = <?php echo $click; ?>;
-        var data_viewer = <?php echo $viewer; ?>;
+        var data_click = <?php echo $jsonClick; ?>;
+        var data_viewer = <?php echo $jsonViewer; ?>;
+        var categories = <?php echo $jsonAnios; ?>;
+
         $('#containers').highcharts({
             chart: { type: 'column' },
             title: { text: 'COMPARATIVA DE VENTAS Y COMPRAS' },
-            xAxis: { categories: ['2021','2022','2023', '2024','2025','2026','2027'] },
+            xAxis: { categories: categories },
             yAxis: { title: { text: 'MONTO' } },
             series: [
                 { name: 'Compras', data: data_click }, 
@@ -488,7 +455,7 @@
     });
     </script>
 
-    <!-- Bootstrap Core Js -->
+    <!-- Bootstrap & AdminBSB Plugins -->
     <script src="../../assets/plugins/bootstrap/js/bootstrap.js"></script>
     <script src="../../assets/plugins/bootstrap-select/js/bootstrap-select.js"></script>
     <script src="../../assets/plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
@@ -500,4 +467,3 @@
     <script src="../../assets/js/pages/index.js"></script>
 </body>
 </html>
-
