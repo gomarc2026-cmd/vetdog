@@ -20,7 +20,7 @@ require_once '../../assets/db/config.php';
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <title>Vetdog V.1 | Registrar Cliente</title>
+    <title>Gomar V.1 | Registrar Cliente</title>
     <!-- Bootstrap Material Datetime Picker Css -->
     <link href="../../assets/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css" rel="stylesheet" />
     <!-- Bootstrap DatePicker Css -->
@@ -211,7 +211,7 @@ require_once '../../assets/db/config.php';
 }
 
 
-        
+
     </style>
 </head>
 
@@ -252,7 +252,7 @@ require_once '../../assets/db/config.php';
             <div class="navbar-header">
                 <a href="javascript:void(0);" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false"></a>
                 <a href="javascript:void(0);" class="bars"></a>
-                <a class="navbar-brand" href="../panel-admin/administrador.php">⚡ VETDOG - DASHBOARD</a>
+                <a class="navbar-brand" href="../panel-admin/administrador.php"> GOMARSOFT - INICIO</a>
             </div>
             <div class="collapse navbar-collapse" id="navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
@@ -324,7 +324,12 @@ require_once '../../assets/db/config.php';
                         </a>
                         <ul class="ml-menu">
                             <li class="active"><a href="../clientes/nuevo.php">Registrar</a></li>
-                            <li><a href="../../folder/clientes/index.php">Listar / Modificar</a></li>
+                           
+
+                            <!-- POR ESTO: -->
+<li><a href="../clientes/mostrar.php">Listar / Modificar</a></li>
+
+
                         </ul>
                     </li>
 
