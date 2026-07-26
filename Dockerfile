@@ -1,12 +1,13 @@
 FROM php:8.1-apache
 
-# Activar módulo de reescritura de Apache para .htaccess
+# 1. Habilitar mod_rewrite de Apache (para que funcionen rutas sin .php y .htaccess como en XAMPP)
 RUN a2enmod rewrite
 
-# Instalar extensiones de base de datos
-RUN docker-php-ext-install pdo pdo_mysql mysqli
+# 2. Instalar extensiones de PHP que usa tu proyecto (mysqli y pdo_mysql)
+RUN docker-php-ext-install mysqli pdo pdo_mysql
 
-# Permitir lectura de .htaccess
-RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
-
+# 3. Copiar todo el código de tu proyecto al servidor Apache
 COPY . /var/www/html/
+
+# 4. TRUCO DE BD: Crear un script de inicio que redirige "localhost" en el servidor hacia la URL de Aiven
+CMD bash -c "echo '127.0.0.1 mysql-2f8d2d20-gomarc-7580.b.aivencloud.com' >> /etc/hosts && apache2-foreground"
