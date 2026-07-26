@@ -163,7 +163,7 @@ $year = date('Y');
                             <span>CLIENTES</span>
                         </a>
                         <ul class="ml-menu">
-                            <li><a href="../clientes/nuevo">Registrar</a></li>
+                            <li><a href="../clientes/nuevo.php">Registrar</a></li>
                             <li><a href="../../folder/clientes">Listar / Modificar</a></li>
                         </ul>
                     </li>
