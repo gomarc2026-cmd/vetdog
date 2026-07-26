@@ -1,5 +1,5 @@
 <?php
-// 1. Iniciar búfer de salida para evitar errores de envio de encabezados
+// 1. Iniciar búfer de salida para evitar errores de envío de encabezados
 ob_start();
 
 // 2. Iniciar sesión
@@ -282,6 +282,15 @@ require_once '../../assets/db/config.php';
                                     </div>
 
                                     <div class="col-sm-6">
+                                        <label class="control-label">Fecha de Nacimiento</label>
+                                        <div class="form-group">
+                                            <div class="form-line">
+                                                <input type="date" name="fecnaci" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
                                         <label class="control-label">Telefono movil<span class="text-danger">*</span></label>
                                         <div class="form-group">
                                             <div class="form-line">
@@ -409,6 +418,7 @@ require_once '../../assets/db/config.php';
         $dni_due = $_POST['dni_due'];
         $nom_due = $_POST['nom_due'];
         $ape_due = $_POST['ape_due'];
+        $fecnaci = !empty($_POST['fecnaci']) ? $_POST['fecnaci'] : date('Y-m-d');
         $movil   = $_POST['movil'];
         $fijo    = $_POST['fijo'];
         $correo  = $_POST['correo'];
@@ -427,8 +437,8 @@ require_once '../../assets/db/config.php';
             if ($result && mysqli_num_rows($result) > 0) {
                 echo '<script type="text/javascript">swal("Oops...!", "Ya existe el registro a agregar!", "error");</script>';
             } else {
-                $sql2 = "INSERT INTO owner(dni_due,nom_due,ape_due,movil,fijo,correo,direc,estado,usuario,contra,cargo,foto) 
-                         VALUES ('$dni_due','$nom_due','$ape_due','$movil','$fijo','$correo','$direc','$estado','$usuario','$contra','$cargo','$foto_nombre')";
+                $sql2 = "INSERT INTO owner(dni_due,nom_due,ape_due,fecnaci,movil,fijo,correo,direc,estado,usuario,contra,cargo,foto) 
+                         VALUES ('$dni_due','$nom_due','$ape_due','$fecnaci','$movil','$fijo','$correo','$direc','$estado','$usuario','$contra','$cargo','$foto_nombre')";
                 
                 if (isset($_FILES['foto']['tmp_name']) && $_FILES['foto']['tmp_name'] != '') {
                     move_uploaded_file($_FILES['foto']['tmp_name'], "../../assets/img/subidas/".$foto_nombre);
@@ -454,14 +464,15 @@ require_once '../../assets/db/config.php';
                 if ($stmt->rowCount() > 0) {
                     echo '<script type="text/javascript">swal("Oops...!", "Ya existe el registro a agregar!", "error");</script>';
                 } else {
-                    $insertStmt = $connect->prepare("INSERT INTO owner(dni_due,nom_due,ape_due,movil,fijo,correo,direc,estado,usuario,contra,cargo,foto) 
-                                                     VALUES (:dni_due, :nom_due, :ape_due, :movil, :fijo, :correo, :direc, :estado, :usuario, :contra, :cargo, :foto)");
+                    $insertStmt = $connect->prepare("INSERT INTO owner(dni_due,nom_due,ape_due,fecnaci,movil,fijo,correo,direc,estado,usuario,contra,cargo,foto) 
+                                                     VALUES (:dni_due, :nom_due, :ape_due, :fecnaci, :movil, :fijo, :correo, :direc, :estado, :usuario, :contra, :cargo, :foto)");
                     
                     $success = $insertStmt->execute([
                         ':dni_due' => $dni_due, ':nom_due' => $nom_due, ':ape_due' => $ape_due,
-                        ':movil' => $movil, ':fijo' => $fijo, ':correo' => $correo,
-                        ':direc' => $direc, ':estado' => $estado, ':usuario' => $usuario,
-                        ':contra' => $contra, ':cargo' => $cargo, ':foto' => $foto_nombre
+                        ':fecnaci' => $fecnaci, ':movil' => $movil, ':fijo' => $fijo,
+                        ':correo' => $correo, ':direc' => $direc, ':estado' => $estado,
+                        ':usuario' => $usuario, ':contra' => $contra, ':cargo' => $cargo,
+                        ':foto' => $foto_nombre
                     ]);
 
                     if (isset($_FILES['foto']['tmp_name']) && $_FILES['foto']['tmp_name'] != '') {
