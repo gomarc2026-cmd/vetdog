@@ -1,4 +1,7 @@
 <?php
+  // 1. OBLIGATORIO: Iniciar sesión antes de usar $_SESSION
+  session_start();
+
   require '../assets/db/config.php';
 
   if(isset($_POST['login'])) {
@@ -35,8 +38,8 @@
             $_SESSION['contra'] = $data['contra'];
             $_SESSION['cargo'] = $data['cargo'];
             
-            // Redirección corregida con ruta absoluta y extensión .php
-            header('Location: /vista/panel-admin/administrador.php');
+            // 2. Ruta relativa limpia para evitar bucles o errores 404
+            header('Location: panel-admin/administrador.php');
             exit;
           }
           else {
@@ -52,11 +55,15 @@
 ?>
 
 <!DOCTYPE html>
-<html :class="{ 'theme-dark': dark }" x-data="data()" lang="en">
+<html :class="{ 'theme-dark': dark }" x-data="data()" lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login | Vetdog - Vetdog Admin Template</title>
+    
+    <!-- Asegura que los archivos se busquen desde la raíz -->
+    <base href="/vista/">
+
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
@@ -93,11 +100,11 @@
             <div class="w-full">
               <form class="container" autocomplete="off" method="POST" role="form">
               <h1 class="mb-4 text-xl font-semibold text-gray-700 dark:text-gray-200">
-                Iniciar Sesion
+                Iniciar Sesión
               </h1>
               <?php
                 if(isset($errMsg)){
-                  echo '<div style="color:#FF0000;text-align:center;font-size:20px;">'.$errMsg.'</div>';  
+                  echo '<div style="color:#FF0000;text-align:center;font-size:16px;margin-bottom:15px;">'.$errMsg.'</div>';  
                 }
               ?>
               <label class="block text-sm">
@@ -117,7 +124,7 @@
               </label>
 
               <hr class="my-8" />
-              <button class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium leading-5 text-white text-gray-700 transition-colors duration-150 border border-gray-300 rounded-lg dark:text-gray-400 active:bg-transparent hover:border-gray-500 focus:border-gray-500 active:text-gray-500 focus:outline-none focus:shadow-outline-gray" name='login' type="submit">Acceder</button>
+              <button class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium leading-5 text-white bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple" name="login" type="submit">Acceder</button>
                </form>
                <div id="msg_error" class="alert alert-danger" role="alert" style="display: none"></div>
             </div>
