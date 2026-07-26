@@ -9,14 +9,28 @@ if (!isset($_SESSION['cargo'])) {
 
 require_once '../../assets/db/config.php';
 
-// Configuración de la conexión PDO centralizada usando PDO o MySQLi existente
+/* Configuración de conexión PDO a la base de datos de Aiven */
+$db_host = 'mysql-2f8d2d20-gomarc-7580.b.aivencloud.com';
+$db_port = '16189';
+$db_name = 'defaultdb'; // Cambia a 'vetdog' si creaste esa BD dentro de Aiven
+$db_user = 'avnadmin';
+$db_pass = 'AVNS_4M0Ce7IoLmFTuGHDU_R';
+
 try {
-    $db = new PDO("mysql:host=localhost;dbname=vetdog;charset=utf8mb4", "root", "", [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-    ]);
+    $db = new PDO(
+        "mysql:host={$db_host};port={$db_port};dbname={$db_name};charset=utf8mb4",
+        $db_user,
+        $db_pass,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            // Soporte SSL requerido por Aiven
+            PDO::MYSQL_ATTR_SSL_CA => true,
+            PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false
+        ]
+    );
 } catch (PDOException $e) {
-    die("Error de conexión: " . $e->getMessage());
+    die("Error de conexión a la base de datos: " . $e->getMessage());
 }
 
 /* Obteniendo datos para la comparativa de Ventas y Compras */
@@ -28,7 +42,7 @@ $sql_compras = "SELECT SUM(total) as count FROM compra GROUP BY YEAR(fecha) ORDE
 $stmt_c = $db->query($sql_compras);
 $click = json_encode(array_column($stmt_c->fetchAll(), 'count'), JSON_NUMERIC_CHECK);
 
-/* Obtener Totales para los Info-Boxes (Optimizados en consultas sencillas) */
+/* Obtener Totales para los Info-Boxes */
 $total_products     = $db->query("SELECT COUNT(*) FROM products")->fetchColumn() ?: 0;
 $total_categories   = $db->query("SELECT COUNT(*) FROM category")->fetchColumn() ?: 0;
 $total_owners       = $db->query("SELECT COUNT(*) FROM owner")->fetchColumn() ?: 0;
@@ -430,7 +444,7 @@ $year = date('Y');
 
         $(document).ready(function(){
             $.ajax({
-                url: "http://localhost/vetdog/vista/panel-admin/drap.php",
+                url: "drap.php",
                 method: "GET",
                 success: function(data) {
                     var player = [];
