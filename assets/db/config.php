@@ -5,7 +5,7 @@ session_start();
 define('dbhost', 'mysql-2f8d2d20-gomarc-7580.b.aivencloud.com');
 define('dbport', '16189');
 define('dbuser', 'avnadmin');
-define('dbpass', 'AVNS_4M0Ce7IuLmFTuGHDU_R');
+define('dbpass', 'AVNS_4M0Ce7IoLmFTuGHDU_R');
 define('dbname', 'defaultdb');
 
 // Connecting database
