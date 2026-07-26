@@ -7,49 +7,36 @@ if (!isset($_SESSION['cargo'])) {
     exit();
 }
 
+// 1. Cargar la configuración general y conexión (PDO y MySQLi ya están listos aquí)
 require_once '../../assets/db/config.php';
 
-/* Configuración de conexión PDO a la base de datos de Aiven */
-$db_host = 'mysql-2f8d2d20-gomarc-7580.b.aivencloud.com';
-$db_port = '16189';
-$db_name = 'defaultdb'; // Cambia a 'vetdog' si creaste esa BD dentro de Aiven
-$db_user = 'avnadmin';
-$db_pass = 'AVNS_4M0Ce7IoLmFTuGHDU_R';
-
-try {
-    $db = new PDO(
-        "mysql:host={$db_host};port={$db_port};dbname={$db_name};charset=utf8mb4",
-        $db_user,
-        $db_pass,
-        [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            // Soporte SSL requerido por Aiven
-            PDO::MYSQL_ATTR_SSL_CA => true,
-            PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false
-        ]
-    );
-} catch (PDOException $e) {
-    die("Error de conexión a la base de datos: " . $e->getMessage());
+// Si $db no está configurado en config.php, usamos la conexión $connect de PDO
+if (!isset($db) && isset($connect)) {
+    $db = $connect;
 }
 
-/* Obteniendo datos para la comparativa de Ventas y Compras */
-$sql_ventas = "SELECT SUM(total) as count FROM venta GROUP BY YEAR(fecha) ORDER BY YEAR(fecha)";
-$stmt_v = $db->query($sql_ventas);
-$viewer = json_encode(array_column($stmt_v->fetchAll(), 'count'), JSON_NUMERIC_CHECK);
+try {
+    /* Obteniendo datos para la comparativa de Ventas y Compras */
+    $sql_ventas = "SELECT SUM(total) as count FROM venta GROUP BY YEAR(fecha) ORDER BY YEAR(fecha)";
+    $stmt_v = $db->query($sql_ventas);
+    $viewer = json_encode(array_column($stmt_v->fetchAll(), 'count'), JSON_NUMERIC_CHECK) ?: '[]';
 
-$sql_compras = "SELECT SUM(total) as count FROM compra GROUP BY YEAR(fecha) ORDER BY YEAR(fecha)";
-$stmt_c = $db->query($sql_compras);
-$click = json_encode(array_column($stmt_c->fetchAll(), 'count'), JSON_NUMERIC_CHECK);
+    $sql_compras = "SELECT SUM(total) as count FROM compra GROUP BY YEAR(fecha) ORDER BY YEAR(fecha)";
+    $stmt_c = $db->query($sql_compras);
+    $click = json_encode(array_column($stmt_c->fetchAll(), 'count'), JSON_NUMERIC_CHECK) ?: '[]';
 
-/* Obtener Totales para los Info-Boxes */
-$total_products     = $db->query("SELECT COUNT(*) FROM products")->fetchColumn() ?: 0;
-$total_categories   = $db->query("SELECT COUNT(*) FROM category")->fetchColumn() ?: 0;
-$total_owners       = $db->query("SELECT COUNT(*) FROM owner")->fetchColumn() ?: 0;
-$total_compras      = $db->query("SELECT SUM(total) FROM compra")->fetchColumn() ?: 0;
-$total_suppliers    = $db->query("SELECT COUNT(*) FROM supplier")->fetchColumn() ?: 0;
-$total_vets         = $db->query("SELECT COUNT(*) FROM veterinarian")->fetchColumn() ?: 0;
-$total_ventas       = $db->query("SELECT SUM(total) FROM venta")->fetchColumn() ?: 0;
+    /* Obtener Totales para los Info-Boxes */
+    $total_products    = $db->query("SELECT COUNT(*) FROM products")->fetchColumn() ?: 0;
+    $total_categories  = $db->query("SELECT COUNT(*) FROM category")->fetchColumn() ?: 0;
+    $total_owners      = $db->query("SELECT COUNT(*) FROM owner")->fetchColumn() ?: 0;
+    $total_compras     = $db->query("SELECT SUM(total) FROM compra")->fetchColumn() ?: 0;
+    $total_suppliers   = $db->query("SELECT COUNT(*) FROM supplier")->fetchColumn() ?: 0;
+    $total_vets        = $db->query("SELECT COUNT(*) FROM veterinarian")->fetchColumn() ?: 0;
+    $total_ventas      = $db->query("SELECT SUM(total) FROM venta")->fetchColumn() ?: 0;
+
+} catch (PDOException $e) {
+    die("Error al consultar la base de datos: " . $e->getMessage());
+}
 
 // Configurar zona horaria
 date_default_timezone_set('America/El_Salvador');
@@ -411,8 +398,6 @@ $year = date('Y');
         </div>
     </section>
 
-    <?php include('data.php'); ?>
-
     <!-- Scripts JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="../../assets/plugins/bootstrap/js/bootstrap.js"></script>
@@ -427,25 +412,35 @@ $year = date('Y');
 
     <!-- Custom JavaScript Config -->
     <script type="text/javascript">
+        // Ocultar la pantalla de carga automáticamente por seguridad
+        $(document).ready(function() {
+            setTimeout(function () {
+                $('.page-loader-wrapper').fadeOut();
+            }, 500);
+        });
+
         $(function () { 
             var data_click = <?php echo $click; ?>;
             var data_viewer = <?php echo $viewer; ?>;
-            $('#containers').highcharts({
-                chart: { type: 'column' },
-                title: { text: 'COMPARATIVA DE VENTAS Y COMPRAS' },
-                xAxis: { categories: ['2021','2022','2023', '2024','2025','2026','2027'] },
-                yAxis: { title: { text: 'MONTO' } },
-                series: [
-                    { name: 'Compras', data: data_click }, 
-                    { name: 'Ventas', data: data_viewer }
-                ]
-            });
+            if ($('#containers').length) {
+                $('#containers').highcharts({
+                    chart: { type: 'column' },
+                    title: { text: 'COMPARATIVA DE VENTAS Y COMPRAS' },
+                    xAxis: { categories: ['2021','2022','2023', '2024','2025','2026','2027'] },
+                    yAxis: { title: { text: 'MONTO' } },
+                    series: [
+                        { name: 'Compras', data: data_click }, 
+                        { name: 'Ventas', data: data_viewer }
+                    ]
+                });
+            }
         });
 
         $(document).ready(function(){
             $.ajax({
                 url: "drap.php",
                 method: "GET",
+                dataType: "json",
                 success: function(data) {
                     var player = [];
                     var stock = [];
@@ -465,10 +460,12 @@ $year = date('Y');
                         }]
                     };
                     var ctx = $("#mycanvas");
-                    new Chart(ctx, { type: 'bar', data: chartdata });
+                    if (ctx.length) {
+                        new Chart(ctx, { type: 'bar', data: chartdata });
+                    }
                 },
                 error: function(err) {
-                    console.error(err);
+                    console.error("Error al cargar datos de drap.php:", err);
                 }
             });
         });
