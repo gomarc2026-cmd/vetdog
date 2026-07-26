@@ -38,150 +38,149 @@ require_once '../../assets/db/config.php';
     <link href="../../assets/css/themes/all-themes.css" rel="stylesheet" />
     <link rel="shortcut icon" type="image/x-icon" href="../../assets/img/lll.png" />
 
-    <!-- ESTILOS MODO OSCURO PERSONALIZADOS -->
+    <!-- ESTILOS MODO OSCURO DE ALTO CONTRASTE -->
     <style>
         body {
-            background-color: #0f172a !important;
+            background-color: #0d1117 !important;
             font-family: 'Poppins', sans-serif !important;
-            color: #e2e8f0 !important;
+            color: #ffffff !important;
         }
-        /* Topbar / Navbar */
+        /* Navbar Superior */
         .navbar {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
-            border-bottom: 1px solid #334155;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            background: #161b22 !important;
+            border-bottom: 1px solid #30363d;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
         .navbar-brand {
             color: #38bdf8 !important;
             font-weight: 700;
-            letter-spacing: 0.5px;
         }
-        /* Sidebar */
+        /* Sidebar (Menú Lateral) */
         .sidebar {
-            background-color: #1e293b !important;
-            border-right: 1px solid #334155;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+            background-color: #161b22 !important;
+            border-right: 1px solid #30363d;
         }
         .sidebar .user-info {
-            background: linear-gradient(to right, #1e293b, #0f172a) !important;
-            border-bottom: 1px solid #334155;
+            background: #0d1117 !important;
+            border-bottom: 1px solid #30363d;
         }
-        .sidebar .user-info .info-container .name, 
+        .sidebar .user-info .info-container .name {
+            color: #ffffff !important;
+            font-weight: 600;
+        }
         .sidebar .user-info .info-container .email {
-            color: #f1f5f9 !important;
+            color: #9198a1 !important;
+        }
+        .sidebar .menu .list .header {
+            background-color: transparent !important;
+            color: #38bdf8 !important;
+            font-weight: 700;
+            letter-spacing: 1px;
         }
         .sidebar .menu .list a {
-            color: #94a3b8 !important;
+            color: #f0f6fc !important; /* Texto totalmente visible */
+            font-weight: 500;
+        }
+        .sidebar .menu .list i.material-icons {
+            color: #38bdf8 !important; /* Íconos visibles */
         }
         .sidebar .menu .list a:hover {
-            background-color: #334155 !important;
-            color: #38bdf8 !important;
+            background-color: #21262d !important;
+            color: #58a6ff !important;
         }
         .sidebar .menu .list li.active > a {
             background-color: #0284c7 !important;
             color: #ffffff !important;
-            border-radius: 8px;
-            margin: 0 10px;
-            width: auto;
-        }
-        .sidebar .menu .list .header {
-            background-color: transparent !important;
-            color: #64748b !important;
-            font-weight: 600;
+            border-radius: 6px;
         }
         .sidebar .menu .list .ml-menu {
-            background-color: #0f172a !important;
+            background-color: #0d1117 !important;
         }
-        /* Tarjetas / Formulario */
+        .sidebar .menu .list .ml-menu li a {
+            color: #c9d1d9 !important;
+        }
+        .sidebar .menu .list .ml-menu li.active a {
+            color: #38bdf8 !important;
+            font-weight: bold;
+        }
+
+        /* Tarjeta Principal */
         .card {
-            background: #1e293b !important;
-            border-radius: 12px !important;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
-            border: 1px solid #334155 !important;
+            background: #161b22 !important;
+            border-radius: 10px !important;
+            border: 1px solid #30363d !important;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
         }
         .card .header {
-            border-bottom: 1px solid #334155 !important;
-            padding: 20px 25px !important;
+            border-bottom: 1px solid #30363d !important;
+            padding: 20px !important;
         }
         .card .header h2 {
-            color: #f8fafc !important;
-            font-weight: 600;
+            color: #ffffff !important;
+            font-weight: 700;
         }
         .card .header h2 small {
-            color: #94a3b8 !important;
+            color: #8b949e !important;
         }
-        /* Controles de Formulario */
+
+        /* Formulario e Inputs */
         label.control-label {
-            color: #cbd5e1 !important;
-            font-weight: 500;
-            margin-bottom: 8px;
+            color: #ffffff !important;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 6px;
         }
         .form-control {
-            background-color: #0f172a !important;
-            border: 1px solid #334155 !important;
-            border-radius: 8px !important;
-            color: #f8fafc !important;
-            padding: 10px 15px !important;
-            height: auto !important;
-            transition: all 0.3s ease;
+            background-color: #21262d !important; /* Fondo del input más claro */
+            border: 1px solid #30363d !important;
+            border-radius: 6px !important;
+            color: #ffffff !important; /* Texto ingresado en Blanco Puro */
+            padding: 10px 14px !important;
+            height: 42px !important;
+        }
+        .form-control::placeholder {
+            color: #8b949e !important; /* Placeholder claro */
+            opacity: 1;
         }
         .form-control:focus {
             border-color: #38bdf8 !important;
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15) !important;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25) !important;
         }
-        .form-group .form-line:after {
-            border-bottom: 2px solid #38bdf8 !important;
-        }
-        /* Alertas */
+
+        /* Alerta informativa */
         .alert-info {
-            background-color: #0369a1 !important;
+            background-color: #0c2d48 !important;
             border: 1px solid #0284c7 !important;
             color: #e0f2fe !important;
             border-radius: 8px !important;
         }
-        /* Subida de Imagen */
-        .preview-img-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-top: 10px;
-        }
-        #blah {
-            border-radius: 8px;
-            border: 2px solid #334155;
-            object-fit: cover;
-        }
+
         /* Botones */
         .btn-custom-cancel {
-            background-color: #ef4444 !important;
-            color: white !important;
-            border-radius: 8px !important;
-            padding: 10px 24px !important;
+            background-color: #dc2626 !important;
+            color: #ffffff !important;
+            border-radius: 6px !important;
+            padding: 10px 22px !important;
             font-weight: 600;
-            transition: 0.3s;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
         }
         .btn-custom-cancel:hover {
-            background-color: #dc2626 !important;
-            box-shadow: 0 6px 15px rgba(239, 68, 68, 0.4);
+            background-color: #b91c1c !important;
         }
         .btn-custom-save {
-            background-color: #10b981 !important;
-            color: white !important;
-            border-radius: 8px !important;
-            padding: 10px 24px !important;
+            background-color: #059669 !important;
+            color: #ffffff !important;
+            border-radius: 6px !important;
+            padding: 10px 22px !important;
             font-weight: 600;
             border: none;
-            transition: 0.3s;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
         }
         .btn-custom-save:hover {
-            background-color: #059669 !important;
-            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4);
+            background-color: #047857 !important;
         }
-        /* Search bar */
+
+        /* Lupa de Búsqueda */
         .search-bar {
-            background-color: #1e293b !important;
+            background-color: #161b22 !important;
         }
         .search-bar input[type="text"] {
             color: #ffffff !important;
@@ -191,7 +190,7 @@ require_once '../../assets/db/config.php';
 
 <body class="theme-red">
     <!-- Page Loader -->
-    <div class="page-loader-wrapper" style="background: #0f172a;">
+    <div class="page-loader-wrapper" style="background: #0d1117;">
         <div class="loader">
             <div class="preloader">
                 <div class="spinner-layer pl-cyan">
@@ -203,14 +202,11 @@ require_once '../../assets/db/config.php';
                     </div>
                 </div>
             </div>
-            <p style="color: #94a3b8;">Cargando interfaz...</p>
+            <p style="color: #ffffff;">Cargando interfaz...</p>
         </div>
     </div>
-    <!-- #END# Page Loader -->
 
-    <!-- Overlay For Sidebars -->
     <div class="overlay"></div>
-    <!-- #END# Overlay For Sidebars -->
 
     <!-- LUPA -->
     <div class="search-bar">
@@ -222,7 +218,6 @@ require_once '../../assets/db/config.php';
             <i class="material-icons">close</i>
         </div>
     </div>
-    <!-- //LUPA -->
 
     <!-- Top Bar -->
     <nav class="navbar">
@@ -230,7 +225,7 @@ require_once '../../assets/db/config.php';
             <div class="navbar-header">
                 <a href="javascript:void(0);" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false"></a>
                 <a href="javascript:void(0);" class="bars"></a>
-                <a class="navbar-brand" href="../panel-admin/administrador.php"> ⚡ VETDOG - DASHBOARD </a>
+                <a class="navbar-brand" href="../panel-admin/administrador.php">⚡ VETDOG - DASHBOARD</a>
             </div>
             <div class="collapse navbar-collapse" id="navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
@@ -239,7 +234,6 @@ require_once '../../assets/db/config.php';
             </div>
         </div>
     </nav>
-    <!-- #Top Bar -->
 
     <section>
         <!-- Left Sidebar -->
@@ -253,16 +247,15 @@ require_once '../../assets/db/config.php';
                     <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo ucfirst($_SESSION['nombre'] ?? ''); ?></div>
                     <div class="email"><?php echo ucfirst($_SESSION['correo'] ?? ''); ?></div>
                     <div class="btn-group user-helper-dropdown">
-                        <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="color:#94a3b8;">keyboard_arrow_down</i>
-                        <ul class="dropdown-menu pull-right" style="background-color: #1e293b; border: 1px solid #334155;">
-                            <li><a href="../config/configuracion.php" style="color:#e2e8f0;"><i class="material-icons" style="color:#38bdf8;">brightness_low</i>Mi Cuenta</a></li>
-                            <li role="separator" class="divider" style="background-color:#334155;"></li>
-                            <li><a href="../pages-logout.php" style="color:#ef4444;"><i class="material-icons" style="color:#ef4444;">input</i>Cerrar Sesión</a></li>
+                        <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="color:#ffffff;">keyboard_arrow_down</i>
+                        <ul class="dropdown-menu pull-right" style="background-color: #161b22; border: 1px solid #30363d;">
+                            <li><a href="../config/configuracion.php" style="color:#ffffff;"><i class="material-icons" style="color:#38bdf8;">brightness_low</i>Mi Cuenta</a></li>
+                            <li role="separator" class="divider" style="background-color:#30363d;"></li>
+                            <li><a href="../pages-logout.php" style="color:#f87171;"><i class="material-icons" style="color:#f87171;">input</i>Cerrar Sesión</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
-            <!-- #User Info -->
 
             <!-- Menu -->
             <div class="menu">
@@ -384,7 +377,7 @@ require_once '../../assets/db/config.php';
         <aside id="rightsidebar" class="right-sidebar"></aside>
     </section>
 
-    <!--============================CONTENIDO DE LA PÁGINA ==========================================================-->
+    <!--============================ CONTENIDO DE LA PÁGINA ==========================================================-->
     <section class="content">
         <div class="container-fluid">
             <div class="alert alert-info">
@@ -497,9 +490,9 @@ require_once '../../assets/db/config.php';
                                     <div class="col-sm-6">
                                         <label class="control-label">Fotografía</label>
                                         <div class="form-group">
-                                            <div class="form-line preview-img-container">
-                                                <input type="file" id="imagen" name="foto" onchange="readURL(this);" class="form-control" style="border:none !important; background:transparent !important;">
-                                                <img id="blah" src="http://placehold.it/180" alt="Vista previa" style="max-width:80px; max-height:80px;" />  
+                                            <div class="form-line" style="display:flex; align-items:center; gap:15px;">
+                                                <input type="file" id="imagen" name="foto" onchange="readURL(this);" class="form-control" style="border:none !important; background:transparent !important; padding:0 !important;">
+                                                <img id="blah" src="http://placehold.it/180" alt="Vista previa" style="max-width:70px; max-height:70px; border-radius:6px; border:1px solid #30363d;" />  
                                             </div>
                                         </div>
                                     </div>
@@ -517,7 +510,7 @@ require_once '../../assets/db/config.php';
                                     </div>
                                 </div>
 
-                                <hr style="border-top: 1px solid #334155; margin: 25px 0;">
+                                <hr style="border-top: 1px solid #30363d; margin: 25px 0;">
 
                                 <div class="row clearfix" style="text-align: center;">
                                     <div class="col-xs-12">
@@ -565,7 +558,6 @@ require_once '../../assets/db/config.php';
     <!--------------------------------SCRIPT GUARDADO AIVEN----------------------------->
     <?php
     if (isset($_POST["agregar"])) {
-        // Asignamos la conexión según la variante configurada en config.php (MySQLi SSL o PDO)
         $conn = $conn_mysqli ?? $db ?? null;
 
         $dni_due = $_POST['dni_due'];
@@ -582,7 +574,6 @@ require_once '../../assets/db/config.php';
         $cargo   = $_POST['cargo'];
         $foto_nombre = $_FILES['foto']['name'] ?? '';
 
-        // Si tenemos conexión MySQLi
         if ($conn instanceof mysqli) {
             $sql = "SELECT * FROM owner WHERE dni_due='$dni_due' OR movil='$movil' OR (fijo='$fijo' AND fijo != '')";
             $result = mysqli_query($conn, $sql);
@@ -608,7 +599,6 @@ require_once '../../assets/db/config.php';
                 }
             }
         } 
-        // Si la conexión es PDO ($connect)
         elseif (isset($connect)) {
             try {
                 $stmt = $connect->prepare("SELECT * FROM owner WHERE dni_due = :dni_due OR movil = :movil");
