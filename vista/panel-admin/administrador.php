@@ -8,11 +8,8 @@
 
 <?php
 
-  $dbHost = "localhost";
-  $dbDatabase = "vetdog";
-  $dbPasswrod = "";
-  $dbUser = "root";
-  $mysqli = mysqli_connect($dbHost, $dbUser, $dbPasswrod, $dbDatabase);
+ // Incluimos tu config.php que ya tiene Aiven
+require_once '../../assets/db/config.php';
   /* Getting demo_viewer table data */
 
   $sql = "SELECT SUM(total) as count FROM venta 

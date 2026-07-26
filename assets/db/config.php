@@ -6,7 +6,7 @@ define('dbuser', 'avnadmin');
 define('dbpass', 'AVNS_4M0Ce7IoLmFTuGHDU_R');
 define('dbname', 'defaultdb');
 
-// Connecting database
+// 1. Conexión PDO (para Login y otros formularios)
 try {
     $options = array(
         PDO::MYSQL_ATTR_SSL_CA => true,
@@ -18,4 +18,7 @@ try {
 } catch(PDOException $e) {
     echo $e->getMessage();
 }
+
+// 2. Conexión MYSQLI (para administrador.php, data.php y drap.php)
+$mysqli = mysqli_connect(dbhost, dbuser, dbpass, dbname, dbport);
 ?>
