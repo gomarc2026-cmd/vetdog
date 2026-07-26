@@ -15,18 +15,18 @@ if (!isset($_SESSION['cargo']) || $_SESSION['cargo'] != 1) {
 require_once '../../assets/db/config.php';
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <title>Vetdog V.1 | Vetdog - Vetdog Admin Template</title>
+    <title>Vetdog V.1 | Registrar Cliente</title>
     <!-- Bootstrap Material Datetime Picker Css -->
     <link href="../../assets/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css" rel="stylesheet" />
     <!-- Bootstrap DatePicker Css -->
     <link href="../../assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.css" rel="stylesheet" />
     <!-- Google Font - Iconos -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
     <!-- Bootstrap Core Css -->
     <link href="../../assets/plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -37,14 +37,164 @@ require_once '../../assets/db/config.php';
     <link href="../../css/style.css" rel="stylesheet">
     <link href="../../assets/css/themes/all-themes.css" rel="stylesheet" />
     <link rel="shortcut icon" type="image/x-icon" href="../../assets/img/lll.png" />
+
+    <!-- ESTILOS MODO OSCURO PERSONALIZADOS -->
+    <style>
+        body {
+            background-color: #0f172a !important;
+            font-family: 'Poppins', sans-serif !important;
+            color: #e2e8f0 !important;
+        }
+        /* Topbar / Navbar */
+        .navbar {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+            border-bottom: 1px solid #334155;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .navbar-brand {
+            color: #38bdf8 !important;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        /* Sidebar */
+        .sidebar {
+            background-color: #1e293b !important;
+            border-right: 1px solid #334155;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+        }
+        .sidebar .user-info {
+            background: linear-gradient(to right, #1e293b, #0f172a) !important;
+            border-bottom: 1px solid #334155;
+        }
+        .sidebar .user-info .info-container .name, 
+        .sidebar .user-info .info-container .email {
+            color: #f1f5f9 !important;
+        }
+        .sidebar .menu .list a {
+            color: #94a3b8 !important;
+        }
+        .sidebar .menu .list a:hover {
+            background-color: #334155 !important;
+            color: #38bdf8 !important;
+        }
+        .sidebar .menu .list li.active > a {
+            background-color: #0284c7 !important;
+            color: #ffffff !important;
+            border-radius: 8px;
+            margin: 0 10px;
+            width: auto;
+        }
+        .sidebar .menu .list .header {
+            background-color: transparent !important;
+            color: #64748b !important;
+            font-weight: 600;
+        }
+        .sidebar .menu .list .ml-menu {
+            background-color: #0f172a !important;
+        }
+        /* Tarjetas / Formulario */
+        .card {
+            background: #1e293b !important;
+            border-radius: 12px !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+            border: 1px solid #334155 !important;
+        }
+        .card .header {
+            border-bottom: 1px solid #334155 !important;
+            padding: 20px 25px !important;
+        }
+        .card .header h2 {
+            color: #f8fafc !important;
+            font-weight: 600;
+        }
+        .card .header h2 small {
+            color: #94a3b8 !important;
+        }
+        /* Controles de Formulario */
+        label.control-label {
+            color: #cbd5e1 !important;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .form-control {
+            background-color: #0f172a !important;
+            border: 1px solid #334155 !important;
+            border-radius: 8px !important;
+            color: #f8fafc !important;
+            padding: 10px 15px !important;
+            height: auto !important;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #38bdf8 !important;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15) !important;
+        }
+        .form-group .form-line:after {
+            border-bottom: 2px solid #38bdf8 !important;
+        }
+        /* Alertas */
+        .alert-info {
+            background-color: #0369a1 !important;
+            border: 1px solid #0284c7 !important;
+            color: #e0f2fe !important;
+            border-radius: 8px !important;
+        }
+        /* Subida de Imagen */
+        .preview-img-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        #blah {
+            border-radius: 8px;
+            border: 2px solid #334155;
+            object-fit: cover;
+        }
+        /* Botones */
+        .btn-custom-cancel {
+            background-color: #ef4444 !important;
+            color: white !important;
+            border-radius: 8px !important;
+            padding: 10px 24px !important;
+            font-weight: 600;
+            transition: 0.3s;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        }
+        .btn-custom-cancel:hover {
+            background-color: #dc2626 !important;
+            box-shadow: 0 6px 15px rgba(239, 68, 68, 0.4);
+        }
+        .btn-custom-save {
+            background-color: #10b981 !important;
+            color: white !important;
+            border-radius: 8px !important;
+            padding: 10px 24px !important;
+            font-weight: 600;
+            border: none;
+            transition: 0.3s;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+        .btn-custom-save:hover {
+            background-color: #059669 !important;
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4);
+        }
+        /* Search bar */
+        .search-bar {
+            background-color: #1e293b !important;
+        }
+        .search-bar input[type="text"] {
+            color: #ffffff !important;
+        }
+    </style>
 </head>
 
 <body class="theme-red">
     <!-- Page Loader -->
-    <div class="page-loader-wrapper">
+    <div class="page-loader-wrapper" style="background: #0f172a;">
         <div class="loader">
             <div class="preloader">
-                <div class="spinner-layer pl-red">
+                <div class="spinner-layer pl-cyan">
                     <div class="circle-clipper left">
                         <div class="circle"></div>
                     </div>
@@ -53,7 +203,7 @@ require_once '../../assets/db/config.php';
                     </div>
                 </div>
             </div>
-            <p>Cargando...</p>
+            <p style="color: #94a3b8;">Cargando interfaz...</p>
         </div>
     </div>
     <!-- #END# Page Loader -->
@@ -65,11 +215,11 @@ require_once '../../assets/db/config.php';
     <!-- LUPA -->
     <div class="search-bar">
         <div class="search-icon">
-            <i class="material-icons"></i>
+            <i class="material-icons">search</i>
         </div>
         <input type="text" placeholder="Buscar...">
         <div class="close-search">
-            <i class="material-icons">X</i>
+            <i class="material-icons">close</i>
         </div>
     </div>
     <!-- //LUPA -->
@@ -80,7 +230,7 @@ require_once '../../assets/db/config.php';
             <div class="navbar-header">
                 <a href="javascript:void(0);" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false"></a>
                 <a href="javascript:void(0);" class="bars"></a>
-                <a class="navbar-brand" href="../panel-admin/administrador.php"> VETDOG - DASHBOARD </a>
+                <a class="navbar-brand" href="../panel-admin/administrador.php"> ⚡ VETDOG - DASHBOARD </a>
             </div>
             <div class="collapse navbar-collapse" id="navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
@@ -97,17 +247,17 @@ require_once '../../assets/db/config.php';
             <!-- User Info -->
             <div class="user-info">
                 <div class="image">
-                    <img src="../../assets/img/mujerico.png" width="48" height="48" alt="User" />
+                    <img src="../../assets/img/mujerico.png" width="48" height="48" alt="User" style="border-radius:50%; border:2px solid #38bdf8;" />
                 </div>
                 <div class="info-container">
                     <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo ucfirst($_SESSION['nombre'] ?? ''); ?></div>
                     <div class="email"><?php echo ucfirst($_SESSION['correo'] ?? ''); ?></div>
                     <div class="btn-group user-helper-dropdown">
-                        <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">keyboard_arrow_down</i>
-                        <ul class="dropdown-menu pull-right">
-                            <li><a href="../config/configuracion.php"><i class="material-icons">brightness_low</i>Mi Cuenta</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="../pages-logout.php"><i class="material-icons">input</i>Cerrar Sesión</a></li>
+                        <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="color:#94a3b8;">keyboard_arrow_down</i>
+                        <ul class="dropdown-menu pull-right" style="background-color: #1e293b; border: 1px solid #334155;">
+                            <li><a href="../config/configuracion.php" style="color:#e2e8f0;"><i class="material-icons" style="color:#38bdf8;">brightness_low</i>Mi Cuenta</a></li>
+                            <li role="separator" class="divider" style="background-color:#334155;"></li>
+                            <li><a href="../pages-logout.php" style="color:#ef4444;"><i class="material-icons" style="color:#ef4444;">input</i>Cerrar Sesión</a></li>
                         </ul>
                     </div>
                 </div>
@@ -238,7 +388,7 @@ require_once '../../assets/db/config.php';
     <section class="content">
         <div class="container-fluid">
             <div class="alert alert-info">
-                <strong>Estimado usuario!</strong> Los campos remarcados con <span class="text-danger">*</span> son necesarios.
+                <strong>Estimado usuario!</strong> Los campos remarcados con <span style="color:#f87171;">*</span> son necesarios para completar el registro.
             </div>
 
             <div class="row clearfix">
@@ -247,15 +397,15 @@ require_once '../../assets/db/config.php';
                         <div class="header">
                             <h2>
                                 REGISTRO DE CLIENTES
-                                <small>Registra cualquier cliente...</small>
+                                <small>Ingresa la información requerida del nuevo cliente...</small>
                             </h2>
                         </div>
 
-                        <div class="body">
+                        <div class="body" style="padding: 30px;">
                             <form method="POST" autocomplete="off" enctype="multipart/form-data">
                                 <div class="row clearfix">
                                     <div class="col-sm-6">
-                                        <label class="control-label">DNI del cliente<span class="text-danger">*</span></label>
+                                        <label class="control-label">DNI del cliente <span style="color:#f87171;">*</span></label>
                                         <div class="form-group">
                                             <div class="form-line">
                                                 <input type="text" name="dni_due" onKeypress="if (event.keyCode < 45 || event.keyCode > 57) event.returnValue = false;" maxlength="8" required class="form-control" placeholder="DNI del cliente..." />
@@ -264,7 +414,7 @@ require_once '../../assets/db/config.php';
                                     </div>
 
                                     <div class="col-sm-6">
-                                        <label class="control-label">Nombre del cliente<span class="text-danger">*</span></label>
+                                        <label class="control-label">Nombre del cliente <span style="color:#f87171;">*</span></label>
                                         <div class="form-group">
                                             <div class="form-line">
                                                 <input type="text" name="nom_due" required class="form-control" placeholder="Nombre del cliente..." />
@@ -273,7 +423,7 @@ require_once '../../assets/db/config.php';
                                     </div>
 
                                     <div class="col-sm-6">
-                                        <label class="control-label">Apellido del cliente<span class="text-danger">*</span></label>
+                                        <label class="control-label">Apellido del cliente <span style="color:#f87171;">*</span></label>
                                         <div class="form-group">
                                             <div class="form-line">
                                                 <input type="text" name="ape_due" required class="form-control" placeholder="Apellido del cliente..." />
@@ -285,58 +435,58 @@ require_once '../../assets/db/config.php';
                                         <label class="control-label">Fecha de Nacimiento</label>
                                         <div class="form-group">
                                             <div class="form-line">
-                                                <input type="date" name="fecnaci" class="form-control" />
+                                                <input type="date" name="fecnaci" class="form-control" style="color-scheme: dark;" />
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="col-sm-6">
-                                        <label class="control-label">Telefono movil<span class="text-danger">*</span></label>
+                                        <label class="control-label">Teléfono móvil <span style="color:#f87171;">*</span></label>
                                         <div class="form-group">
                                             <div class="form-line">
-                                                <input type="text" name="movil" required onKeypress="if (event.keyCode < 45 || event.keyCode > 57) event.returnValue = false;" maxlength="9" class="form-control" placeholder="Telefono movil..." />
+                                                <input type="text" name="movil" required onKeypress="if (event.keyCode < 45 || event.keyCode > 57) event.returnValue = false;" maxlength="9" class="form-control" placeholder="Teléfono móvil..." />
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="col-sm-6">
-                                        <label class="control-label">Telefono fijo</label>
+                                        <label class="control-label">Teléfono fijo</label>
                                         <div class="form-group">
                                             <div class="form-line">
-                                                <input type="text" name="fijo" onKeypress="if (event.keyCode < 45 || event.keyCode > 57) event.returnValue = false;" maxlength="6" class="form-control" placeholder="Telefono fijo..." />
+                                                <input type="text" name="fijo" onKeypress="if (event.keyCode < 45 || event.keyCode > 57) event.returnValue = false;" maxlength="6" class="form-control" placeholder="Teléfono fijo..." />
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="col-sm-6">
-                                        <label class="control-label">Correo</label>
+                                        <label class="control-label">Correo Electrónico</label>
                                         <div class="form-group">
                                             <div class="form-line">
-                                                <input type="email" name="correo" class="form-control" placeholder="Correo..." />
+                                                <input type="email" name="correo" class="form-control" placeholder="Correo electrónico..." />
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="col-sm-6">
-                                        <label class="control-label">Direccion</label>
+                                        <label class="control-label">Dirección</label>
                                         <div class="form-group">
                                             <div class="form-line">
-                                                <input type="text" name="direc" class="form-control" placeholder="Direccion..." />
+                                                <input type="text" name="direc" class="form-control" placeholder="Dirección..." />
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="col-sm-6">
-                                        <label class="control-label">Usuario<span class="text-danger">*</span></label>
+                                        <label class="control-label">Usuario <span style="color:#f87171;">*</span></label>
                                         <div class="form-group">
                                             <div class="form-line">
-                                                <input type="text" name="usuario" required class="form-control" placeholder="Usuario..." />
+                                                <input type="text" name="usuario" required class="form-control" placeholder="Usuario de acceso..." />
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="col-sm-6">
-                                        <label class="control-label">Contraseña<span class="text-danger">*</span></label>
+                                        <label class="control-label">Contraseña <span style="color:#f87171;">*</span></label>
                                         <div class="form-group">
                                             <div class="form-line">
                                                 <input type="password" name="contra" required class="form-control" placeholder="Contraseña..." />
@@ -345,11 +495,11 @@ require_once '../../assets/db/config.php';
                                     </div>
 
                                     <div class="col-sm-6">
-                                        <label class="control-label">Imagen</label>
+                                        <label class="control-label">Fotografía</label>
                                         <div class="form-group">
-                                            <div class="form-line">
-                                                <input type="file" id="imagen" name="foto" onchange="readURL(this);" data-toggle="tooltip">
-                                                <img id="blah" src="http://placehold.it/180" alt="your image" style="max-width:90px;" />  
+                                            <div class="form-line preview-img-container">
+                                                <input type="file" id="imagen" name="foto" onchange="readURL(this);" class="form-control" style="border:none !important; background:transparent !important;">
+                                                <img id="blah" src="http://placehold.it/180" alt="Vista previa" style="max-width:80px; max-height:80px;" />  
                                             </div>
                                         </div>
                                     </div>
@@ -367,13 +517,16 @@ require_once '../../assets/db/config.php';
                                     </div>
                                 </div>
 
-                                <div class="container-fluid" align="center">
-                                    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3"></div>
-                                    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-                                        <a type="button" href="../../folder/clientes" class="btn bg-red"><i class="material-icons">cancel</i> LIMPIAR </a>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-                                        <button class="btn bg-green" name="agregar">GUARDAR<i class="material-icons">save</i></button>
+                                <hr style="border-top: 1px solid #334155; margin: 25px 0;">
+
+                                <div class="row clearfix" style="text-align: center;">
+                                    <div class="col-xs-12">
+                                        <a href="../../folder/clientes" class="btn btn-custom-cancel" style="margin-right: 15px;">
+                                            <i class="material-icons" style="vertical-align: middle; font-size:18px;">cancel</i> CANCELAR
+                                        </a>
+                                        <button class="btn btn-custom-save" name="agregar">
+                                            <i class="material-icons" style="vertical-align: middle; font-size:18px;">save</i> GUARDAR
+                                        </button>
                                     </div>
                                 </div>
                             </form>
