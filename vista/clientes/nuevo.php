@@ -185,6 +185,33 @@ require_once '../../assets/db/config.php';
         .search-bar input[type="text"] {
             color: #ffffff !important;
         }
+
+
+
+
+/* 1. Fondo para la opción activa/desplegada del menú */
+.sidebar .menu .list li.active > a,
+.sidebar .menu .list a.toggled {
+    background-color: #21262d !important; /* Fondo gris oscuro suave */
+    color: #38bdf8 !important;             /* Texto e ícono azul claro */
+    border-left: 4px solid #38bdf8 !important; /* Indicador sutil a la izquierda */
+    border-radius: 0 6px 6px 0 !important;
+}
+
+/* 2. Submenú activo (ej. "Registrar") */
+.sidebar .menu .list .ml-menu li.active a {
+    background-color: #161b22 !important;
+    color: #38bdf8 !important;             /* Texto claro y legible */
+    font-weight: 600 !important;
+}
+
+/* 3. Evitar que la etiqueta del menú cambie a colores oscuros o rojos */
+.sidebar .menu .list li.active > a span {
+    color: #ffffff !important;
+}
+
+
+        
     </style>
 </head>
 
