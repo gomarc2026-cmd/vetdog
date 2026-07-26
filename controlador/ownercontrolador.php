@@ -27,7 +27,9 @@ class ownercontrolador{
                 
      $this->model->insertar($alm);
      //-------------
-header("Location: clientes.php");
+// AQUÍ ESTÁ EL CAMBIO DE REDIRECCIÓN:
+        header("Location: ../folder/clientes.php"); 
+        exit();
 
           }
 
