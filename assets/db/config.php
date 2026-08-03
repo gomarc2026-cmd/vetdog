@@ -8,18 +8,18 @@ define('dbname', 'defaultdb');
 
 try {
     $options = array(
-        PDO::MYSQL_ATTR_SSL_CA => true,
         PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
     );
 
     $connect = new PDO(
-        "mysql:host=" . dbhost . ";port=" . dbport . ";dbname=" . dbname . ";charset=utf8mb4", 
-        dbuser, 
-        dbpass, 
+        "mysql:host=" . dbhost . ";port=" . dbport . ";dbname=" . dbname . ";charset=utf8mb4",
+        dbuser,
+        dbpass,
         $options
     );
+
     $db = $connect;
 } catch (PDOException $e) {
     die("Error de conexión PDO: " . $e->getMessage());
